@@ -1,3 +1,4 @@
 vendor/
 docker-compose.override.yml
 .idea
+!/public/doc/vendor/
