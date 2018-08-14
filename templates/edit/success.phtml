@@ -1,0 +1,26 @@
+<?php
+/**
+ * Copyright Serhii Borodai (c) 2017-2018.
+ */
+
+/**
+ * room
+ *
+ * @author Serhii Borodai <clarifying@gmail.com>
+ */
+/** @var Zend\View\Renderer\PhpRenderer $this */
+
+?>
+<div class="card">
+    <div class="card-header bg-success">
+        <h1>Success</h1>
+    </div>
+    <div class="card-body">
+        <?php if ($count) : ?>
+        <p>Count: <?= $count ?>
+        <?php endif; ?>
+
+        <p><a href="/<?= $routeNameSpace ?>/read/list.phtml">take view list</a>
+    </div>
+</div>
+

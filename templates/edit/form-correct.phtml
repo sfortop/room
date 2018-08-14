@@ -1,0 +1,89 @@
+<?php
+/**
+ * room
+ *
+ * @author Serhii Borodai <clarifying@gmail.com>
+ */
+/** @var Zend\View\Renderer\PhpRenderer $this */
+
+// store ids to use later
+$ids = [];
+$this->placeholder('prices')->captureStart();
+?>
+            <?php /** @var \App\Entity\CorrectStorage $item */
+            foreach ($prices as $item) :?>
+            <?php $ids[] = $item->getDate() ?>
+            <div class="form-group row align-items-center">
+                <div class="col-2">
+                    <label for="price[<?= $item->getDate() ?>]"><?= $item->getDate() ?></label>
+                </div>
+                <div class="col-4">
+                    <input type="text" pattern="\d+(\.)?\d*" class="form-control" id="price[<?= $item->getDate() ?>]" name="price[<?= $item->getDate() ?>]"
+                           value="<?= $item->getPrice() ?>" placeholder="Enter price" required>
+                </div>
+                <div class="col-4">
+                    <input type="button" class="btn btn-danger w-50 marker-delete" id="delete[<?= $item->getDate() ?>]"
+                           data-id="<?= $item->getDate() ?>" name="delete[<?=  $item->getDate() ?>]" value="Delete">
+                </div>
+            </div>
+            <?php endforeach; ?>
+<?php
+
+$this->placeholder('prices')->captureEnd();
+
+?>
+<div class="card">
+    <div class="card-header bg-primary text-white "><h1>Edit</h1></div>
+    <div class="card-body">
+        <form method="post" action="/<?= $routeNameSpace ?>/edit/">
+            <div class="form-group row">
+                <div class="col-2">
+                    <label for="all">Change all prices</label>
+                </div>
+                <div class="col-4">
+                    <input type="text" class="form-control" name="all" id="all">
+                </div>
+                <div class="col-4">
+                    <input type="button" class="btn btn-danger w-50 marker-delete" id="delete[all]" data-id="<?= implode(',', $ids)?>" value="Delete All">
+                </div>
+            </div>
+            <hr>
+            <?= $this->placeholder('prices') ?>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="reset" class="btn btn-primary">Reset changes</button>
+            </div>
+        </form>
+        <div>
+
+        </div>
+    </div>
+</div>
+<?php
+//@todo use route url builder instead of hardcode
+?>
+<script type="application/javascript">
+    $('.marker-delete').click(function (el) {
+        $('.marker-delete').attr('disabled', true);
+        let xhr = new XMLHttpRequest();
+        xhr.open("DELETE", "/correct-storage/delete/"+el.target.getAttribute('data-id'), true);
+        xhr.onreadystatechange = function() {
+            let response;
+            //@todo add user friendly notification or use something like https://packagist.org/packages/slim/flash
+            switch (true) {
+                case this.readyState == XMLHttpRequest.DONE && this.status == 200 :
+                    response = JSON.parse(this.response);
+                    window.document.location = response.url;
+                    break;
+                case this.readyState == XMLHttpRequest.DONE && this.status == 422 :
+                    response = JSON.parse(this.response);
+                    window.document.location = response.url;
+                    break;
+                default:
+                    break;
+            }
+        };
+        xhr.send();
+    })
+</script>
+

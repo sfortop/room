@@ -1,0 +1,49 @@
+<?php
+/**
+ * Copyright Serhii Borodai (c) 2017-2018.
+ */
+
+/**
+ * room
+ *
+ * @author Serhii Borodai <clarifying@gmail.com>
+ */
+/** @var Zend\Paginator\Paginator $paginator */
+/** @var string $viewUrl default url where control was called */
+
+
+// save prev reference points into stack (else we don't know correct prev point
+// more than one step back)
+$pushPrevDate = function($prevDate, $fromDate) {
+    array_unshift($prevDate, $fromDate);
+    return $prevDate;
+};
+$this->prevDate = $pushPrevDate($this->prevDate, $this->fromDate);
+
+?>
+<nav>
+<ul class="pagination">
+    <!-- Previous page link -->
+    <li class="page-item <?= count($this->prevDate) > 1 ? '': 'disabled' ?>">
+        <a class="page-link" href="<?= $viewUrl ?>?<?= count($this->prevDate) > 1
+            ? http_build_query(['fromDate' => $this->prevDate[1],
+            'prevDate' => array_slice($this->prevDate, 2)])
+            : ''
+        ?>"><span>&laquo;</span></a>
+    </li>
+    <li class="page-item active ">
+        <span class="page-link disabled"><span>From: <?= $this->fromDate ?></span></span>
+    </li>
+    <!-- Next page link -->
+    <li class="page-item <?= $this->maxInRange < $this->max ? '': 'disabled' ?>">
+        <a class="page-link" href="<?= $viewUrl?>?<?= $this->maxInRange >= $this->fromDate
+            ? http_build_query([
+                'fromDate' => $this->maxInRange,
+                'prevDate' => $this->prevDate
+            ])
+            : ''
+        ?>"><span>&raquo;</span></a>
+    </li>
+</ul>
+</nav>
+

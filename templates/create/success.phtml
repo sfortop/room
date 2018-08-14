@@ -1,0 +1,24 @@
+<?php
+/**
+ * room
+ *
+ * @author Serhii Borodai <clarifying@gmail.com>
+ */
+/** @var Zend\View\Renderer\PhpRenderer $this */
+?>
+<div class="card">
+    <div class="card-header bg-success">
+        <h1>Success</h1>
+    </div>
+    <div class="card-body">
+        <?php if ($id) : ?>
+        <p>ID: <?= $id ?>
+        <?php endif; ?>
+        <?php if ($count) : ?>
+        <p>Count: <?= $count ?>
+        <?php endif; ?>
+
+        <p>Create <a href="/<?= $routeNameSpace ?>/create/form.phtml">next</a> or <a href="/<?= $routeNameSpace ?>/read/list.phtml">take view list</a>
+    </div>
+</div>
+

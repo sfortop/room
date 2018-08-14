@@ -1,0 +1,35 @@
+<?php
+/**
+ * room
+ *
+ * @author Serhii Borodai <clarifying@gmail.com>
+ */
+/** @var Zend\Paginator\Paginator $paginator */
+/** @var string $viewUrl default url where control was called */
+?>
+<?php if ($this->pageCount): ?>
+    <nav>
+    <ul class="pagination">
+        <!-- Previous page link -->
+        <li class="page-item <?= $this->previous ? '': 'disabled' ?>">
+            <a class="page-link" href="<?= $viewUrl ?><?= $this->previous ? '?page' . $this->previous : ''; ?>"><span>&laquo;</span></a>
+        </li>
+        <!-- Numbered page links -->
+        <?php foreach ($this->pagesInRange as $page): ?>
+            <li class="page-item <?= $page == $this->current ? 'active' : ''?>">
+                <?php if ($page != $this->current): ?>
+                    <a class="page-link" href="<?= $viewUrl ?>?page=<?= $page; ?>">
+                        <?= $page; ?>
+                    </a>
+                <?php else: ?>
+                    <a class="page-link " href="#"><?php echo $page; ?></a>
+                <?php endif; ?>
+            </li>
+        <?php endforeach; ?>
+        <!-- Next page link -->
+        <li class="page-item <?= $this->next ? '': 'disabled' ?>">
+            <a class="page-link" href="<?= $viewUrl?><?= $this->next ? '?page=' . $this->next : ''?>"><span>&raquo;</span></a>
+        </li>
+    </ul>
+    </nav>
+<?php endif; ?>

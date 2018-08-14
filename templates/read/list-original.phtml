@@ -1,0 +1,71 @@
+<?php
+/**
+ * room
+ *
+ * @author Serhii Borodai <clarifying@gmail.com>
+ */
+/** @var Zend\View\Renderer\PhpRenderer $this */
+?>
+<div class="card w-100">
+    <div class="card-header bg-primary">
+        <h1>List</h1>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Price</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>
+                        <table class="table table-borderless">
+                            <thead>
+                                <tr>
+                                    <th>mon</th>
+                                    <th>tue</th>
+                                    <th>wed</th>
+                                    <th>thu</th>
+                                    <th>fri</th>
+                                    <th>sat</th>
+                                    <th>sun</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php /** @var Zend\Paginator\Paginator $paginator */
+            /** @var \App\Entity\PriceInterval $item */
+            foreach ($paginator as $item) : ?>
+                <tr>
+                    <td><?= $item->getId() ?></td>
+                    <td><?= $item->getPrice() ?></td>
+                    <td><?= $item->getDateStart() ?></td>
+                    <td><?= $item->getDateEnd() ?></td>
+                    <td>
+                        <table class="table table-borderless">
+                            <tbody>
+                                <tr>
+                                    <td><input type="checkbox" disabled <?= $item->getMon() ? 'checked':''?>></td>
+                                    <td><input type="checkbox" disabled <?= $item->getTue() ? 'checked':''?>></td>
+                                    <td><input type="checkbox" disabled <?= $item->getWed() ? 'checked':''?>></td>
+                                    <td><input type="checkbox" disabled <?= $item->getThu() ? 'checked':''?>></td>
+                                    <td><input type="checkbox" disabled <?= $item->getFri() ? 'checked':''?>></td>
+                                    <td><input type="checkbox" disabled <?= $item->getSat() ? 'checked':''?>></td>
+                                    <td><input type="checkbox" disabled <?= $item->getSun() ? 'checked':''?>></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer fixed-bottom">
+        <?php //@todo too much hardcode, better to use autowiring for route context or pagination control helper with explicit params ?>
+        <?= $this->paginationControl($paginator,null ,'/templates/pagination/control.phtml', ['viewUrl' => '/price-interval/read/list.phtml']) ?>
+    </div>
+</div>

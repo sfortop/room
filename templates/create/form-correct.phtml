@@ -1,0 +1,111 @@
+<?php
+/**
+ * Copyright Serhii Borodai (c) 2017-2018.
+ */
+
+/**
+ * room
+ *
+ * @author Serhii Borodai <clarifying@gmail.com>
+ */
+
+/** @var Zend\View\Renderer\PhpRenderer $this */
+
+$this->headScript()
+    ->appendFile('https://cdn.jsdelivr.net/momentjs/latest/moment.min.js')
+    ->appendFile('https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js')
+;
+$this->headLink()
+    ->appendStylesheet('https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css');
+?>
+<div class="card">
+    <div class="card-header bg-primary text-white "><h1>Create</h1></div>
+    <div class="card-body">
+        <form method="post" action="/<?= $routeNameSpace ?>/create/">
+            <div class="form-group">
+                <label for="range">Date range:</label>
+                <input id="range" name="range" class="form-control w-100">
+            </div>
+            <div class="form-group">
+                <label for="price">Price (number with dot as delimiter for decimals)</label>
+                <input type="text" pattern="\d+(\.)?\d*" class="form-control" id="price" name="price" placeholder="Enter price" required>
+            </div>
+            <div class="form-group">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="check-all" name="check-all" value="1">
+                    <label class="form-check-label" for="check-all">Select all</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input marker-dow" type="checkbox" id="mon" name="dow[1]" value="1">
+                    <label class="form-check-label" for="mon">mon</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input marker-dow" type="checkbox" id="tue" name="dow[2]"  value="1">
+                    <label class="form-check-label" for="tue">tue</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input marker-dow" type="checkbox" id="wed" name="dow[3]"  value="1">
+                    <label class="form-check-label" for="wed">wed</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input marker-dow" type="checkbox" id="thu" name="dow[4]"  value="1">
+                    <label class="form-check-label" for="thu">thu</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input marker-dow" type="checkbox" id="fri" name="dow[5]"  value="1">
+                    <label class="form-check-label" for="fri">fri</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input marker-dow" type="checkbox" id="sat" name="dow[6]"  value="1">
+                    <label class="form-check-label" for="sat">sat</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input marker-dow" type="checkbox" id="sun" name="dow[0]" value="1">
+                    <label class="form-check-label" for="sun">sun</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Add</button>
+            </div>
+        </form>
+        <div>
+
+        </div>
+    </div>
+</div>
+<script type="application/javascript">
+    //@todo more efficient validation and handling required
+    $('#range').daterangepicker({
+        "showWeekNumbers": true,
+        "autoApply": true,
+        ranges: {
+            'Today': [moment(), moment()],
+            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        },
+        "locale": {
+            "format": "<?= strtoupper(\App\Common\Constants::DATE_FORMAT_JS) ?>",
+            "separator": "<?= \App\Common\Constants::DATE_RANGE_DELIMITER ?>",
+            "weekLabel": "W",
+            "firstDay": 1
+        },
+        "linkedCalendars": false,
+        "showCustomRangeLabel": false,
+        "alwaysShowCalendars": true,
+        "startDate": new Date().toISOString().slice(0, 10),
+        "endDate": new Date().toISOString().slice(0, 10)
+    }, function(start, end, label) {
+//        console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
+    });
+
+    $(document).ready(function () {
+        $('#check-all').click(function (el) {
+            $('.marker-dow').prop('checked', el.target.checked);
+        });
+    })
+</script>

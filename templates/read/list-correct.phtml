@@ -1,0 +1,100 @@
+<?php
+/**
+ * Copyright Serhii Borodai (c) 2017-2018.
+ */
+
+use Zend\Db\ResultSet\ResultSetInterface;
+
+/**
+ * room
+ *
+ * @author Serhii Borodai <clarifying@gmail.com>
+ */
+/** @var Zend\View\Renderer\PhpRenderer $this */
+$minInRange = $minInRange ?? $fromDate;
+$maxInRange = $maxInRange ?? $fromDate;
+?>
+<div class="card w-100">
+    <div class="card-header bg-primary">
+        <h1>List</h1>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Price</th>
+                    <th>Date start</th>
+                    <th>Date end</th>
+                    <th>Operations</th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php /** @var ResultSetInterface $paginated */
+            /** @var \App\Entity\PriceInterval $item */
+            foreach ($paginated as $item) : ?>
+            <?php
+            //@todo remove and use correct min/max query in App\Action\Read\Correct
+                $minInRange = $item->getDateStart() < $minInRange ? $item->getDateStart() : $minInRange;
+                $maxInRange = $item->getDateEnd() > $maxInRange ? $item->getDateEnd() : $maxInRange;
+            ?>
+                <tr>
+                    <td><?= $item->getId() ?></td>
+                    <td><?= $item->getPrice() ?></td>
+                    <td><?= $item->getDateStart() ?></td>
+                    <td><?= $item->getDateEnd() ?></td>
+                    <td><a class="btn btn-primary text-white" href="/correct-storage/edit/<?= implode(
+                            \App\Common\Constants::DATE_RANGE_DELIMITER,
+                            [
+                                $item->getDateStart(),
+                                $item->getDateEnd(),
+                                $item->getPrice()
+                            ]
+                        )
+                        ?>">Edit</a>
+                        <a class="btn btn-danger text-white marker-delete" data-id="<?= \App\Common\Utils::generateDateRangeAsString(
+                                new DateTime($item->getDateStart()),
+                                (new DateTime($item->getDateEnd()))->modify('+1 day')
+                        ) ?>">Delete</a></td>
+
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer fixed-bottom">
+        <?php //@todo too much magic string constants, better to use autowiring for route context or pagination control helper with explicit params ?>
+        <?= $this->partial('/templates/pagination/control-with-reference-point.phtml', [
+            'viewUrl' => '/correct-storage/read/list.phtml',
+            'max' => $max,
+            'minInRange' => $minInRange,
+            'maxInRange' => $maxInRange,
+            'fromDate' => $fromDate,
+            'prevDate' => $prevDate,
+        ]) ?>
+    </div>
+</div>
+<script type="application/javascript">
+    $('.marker-delete').click(function (el) {
+        $('.marker-delete').attr('disabled', true);
+        let xhr = new XMLHttpRequest();
+        xhr.open("DELETE", "/correct-storage/delete/"+el.target.getAttribute('data-id'), true);
+        xhr.onreadystatechange = function() {
+            let response;
+            //@todo add user friendly notification or use something like https://packagist.org/packages/slim/flash
+            switch (true) {
+                case this.readyState == XMLHttpRequest.DONE && this.status == 200 :
+                    response = JSON.parse(this.response);
+                    window.document.location = response.url;
+                    break;
+                case this.readyState == XMLHttpRequest.DONE && this.status == 422 :
+                    response = JSON.parse(this.response);
+                    window.document.location = response.url;
+                    break;
+                default:
+                    break;
+            }
+        };
+        xhr.send();
+    })
+</script>
